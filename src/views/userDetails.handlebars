@@ -1,0 +1,11 @@
+<h1>{{title}}</h1>
+{{#if user}}
+<ul>
+  <li><strong>Nombre:</strong> {{user.first_name}} {{user.last_name}}</li>
+  <li><strong>Email:</strong> {{#if user.email}}{{user.email}}{{else}}No proporcionado{{/if}}</li>
+  <li><strong>Edad:</strong> {{#if user.age}}{{user.age}}{{else}}No especificada{{/if}}</li>
+  <li><strong>Rol:</strong> {{user.role}}</li>
+</ul>
+{{else}}
+<p>No se encontraron datos del usuario.</p>
+{{/if}}

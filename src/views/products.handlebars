@@ -1,0 +1,135 @@
+<div>
+  <h1 class="title">Catálogo de Productos</h1>
+  
+  <!-- Filtros de productos -->
+  <div class="filters">
+    <form action="/products" method="GET" class="filter-form">
+      <div class="filter-item">
+        <label for="limit">Productos por página</label>
+        <select name="limit" id="limit" class="filter-select">
+          <option value="10" {{#if (eq products.limit 10)}}selected{{/if}}>10</option>
+          <option value="20" {{#if (eq products.limit 20)}}selected{{/if}}>20</option>
+          <option value="50" {{#if (eq products.limit 50)}}selected{{/if}}>50</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label for="sort">Ordenar por precio</label>
+        <select name="sort" id="sort" class="filter-select">
+          <option value="">Sin ordenar</option>
+          <option value="asc" {{#if (eq products.sort "asc")}}selected{{/if}}>Menor a mayor</option>
+          <option value="desc" {{#if (eq products.sort "desc")}}selected{{/if}}>Mayor a menor</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label for="query">Filtrar por categoría</label>
+        <input type="text" class="filter-input" id="query" name="query" value="{{products.query}}">
+      </div>
+      <div class="filter-item">
+        <button type="submit" class="filter-btn">Aplicar filtros</button>
+      </div>
+    </form>
+  </div>
+  
+  <!-- Lista de productos -->
+  <div class="product-list">
+    {{#each products.payload}}
+    <div class="product-card-2">
+      {{#if thumbnails.length}}
+      <img src="{{thumbnails.[0]}}" class="product-thumbnail" alt="{{title}}">
+      {{/if}}
+      <div class="product-info">
+        <h5 class="product-title">{{title}}</h5>
+        <p class="product-description">{{description}}</p>
+        <p><strong>Categoría:</strong> {{category}}</p>
+        <p><strong>Precio:</strong> ${{price}}</p>
+        <p><strong>Stock:</strong> {{stock}}</p>
+        <div class="product-actions">
+          <button class="product-btn" onclick="window.location.href='/products/{{_id}}'">Ver detalles</button>
+
+          {{#if ../cartId}}
+          <button class="product-btn add-to-cart" data-product-id="{{_id}}" data-cart-id="{{../cartId}}">
+            Agregar al carrito
+          </button>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  
+  <!-- Paginación -->
+  <div class="pagination">
+    <nav>
+      <ul class="pagination-list">
+        {{#if products.hasPrevPage}}
+        <li class="page-item">
+          <a class="page-link" href="{{products.prevLink}}" aria-label="Anterior">
+            <span>&laquo;</span>
+          </a>
+        </li>
+        {{else}}
+        <li class="page-item disabled">
+          <span class="page-link">&laquo;</span>
+        </li>
+        {{/if}}
+        <li class="page-item active">
+          <span class="page-link">Página {{products.page}} de {{products.totalPages}}</span>
+        </li>
+        {{#if products.hasNextPage}}
+        <li class="page-item">
+          <a class="page-link" href="{{products.nextLink}}" aria-label="Siguiente">
+            <span>&raquo;</span>
+          </a>
+        </li>
+        {{else}}
+        <li class="page-item disabled">
+          <span class="page-link">&raquo;</span>
+        </li>
+        {{/if}}
+      </ul>
+    </nav>
+  </div>
+</div>
+
+{{#if cartId}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const addToCartButtons = document.querySelectorAll('.add-to-cart');
+  addToCartButtons.forEach(button => {
+    button.addEventListener('click', async function() {
+      const productId = this.dataset.productId;
+      const cartId = this.dataset.cartId;
+      const originalText = this.innerText;
+      this.innerText = 'Agregando...';
+      this.disabled = true;
+      try {
+        const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ quantity: 1 })
+        });
+        const result = await response.json();
+        if (response.ok) {
+          this.innerText = '✓ Agregado';
+          setTimeout(() => {
+            this.innerText = originalText;
+            this.disabled = false;
+          }, 2000);
+        } else {
+          alert(`Error: ${result.message}`);
+          this.innerText = originalText;
+          this.disabled = false;
+        }
+      } catch (error) {
+        alert('Error al agregar el producto al carrito');
+        console.error(error);
+        this.innerText = originalText;
+        this.disabled = false;
+      }
+    });
+  });
+});
+</script>
+{{/if}}
