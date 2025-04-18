@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import ProductManagerMongo from '../managers/productManager.mongo.js';
 import { verifyJWT } from '../middlewares/verifyJWT.js';
 import { isAdmin } from '../middlewares/auth.middleware.js';
@@ -25,15 +26,15 @@ const handleValidationErrors = (req, res, next) => {
 productsRouter.get('/', async (req, res) => {
   try {
     const options = {
-      limit: Number(req.query.limit) || 10,
-      page: Number(req.query.page) || 1,
+      limit: Math.max(Number(req.query.limit) || 10, 1),  // Asegurarse de que el límite sea positivo
+      page: Math.max(Number(req.query.page) || 1, 1),  // Asegurarse de que la página sea positiva
       sort: req.query.sort || 'asc',
       query: req.query.query || '',
     };
     const result = await productManager.getProducts(options);
     res.status(200).json(result);
   } catch (error) {
-    console.error('Error al obtener productos:', error.message);
+    console.error('Error al obtener productos:', error);
     res.status(500).json({ status: 'error', message: 'Error al obtener productos' });
   }
 });
@@ -46,9 +47,13 @@ productsRouter.get('/:pid', async (req, res) => {
 
   try {
     const product = await productManager.getProductById(req.params.pid);
+    if (!product) {
+      return res.status(404).json({ status: 'error', message: 'Producto no encontrado' });
+    }
     res.status(200).json({ status: 'success', payload: product });
   } catch (error) {
-    res.status(404).json({ status: 'error', message: error.message });
+    console.error(`Error al obtener producto con ID ${req.params.pid}:`, error);
+    res.status(500).json({ status: 'error', message: error.message });
   }
 });
 
@@ -68,9 +73,12 @@ productsRouter.put('/:pid', verifyJWT, isAdmin, validateProduct, handleValidatio
   try {
     console.log(`Actualizando producto con ID: ${req.params.pid}`);
     const updatedProduct = await productManager.updateProduct(req.params.pid, req.body);
+    if (!updatedProduct) {
+      return res.status(404).json({ status: 'error', message: 'Producto no encontrado para actualizar' });
+    }
     res.status(200).json({ status: 'success', message: 'Producto actualizado exitosamente', payload: updatedProduct });
   } catch (error) {
-    console.error(`Error al actualizar producto con ID ${req.params.pid}:`, error.message);
+    console.error(`Error al actualizar producto con ID ${req.params.pid}:`, error);
     res.status(400).json({ status: 'error', message: error.message });
   }
 });
@@ -78,11 +86,14 @@ productsRouter.put('/:pid', verifyJWT, isAdmin, validateProduct, handleValidatio
 // Eliminar un producto
 productsRouter.delete('/:pid', verifyJWT, isAdmin, async (req, res) => {
   try {
-    await productManager.deleteProduct(req.params.pid);
+    const deletedProduct = await productManager.deleteProduct(req.params.pid);
+    if (!deletedProduct) {
+      return res.status(404).json({ status: 'error', message: 'Producto no encontrado para eliminar' });
+    }
     res.status(200).json({ status: 'success', message: 'Producto eliminado exitosamente' });
   } catch (error) {
-    console.error(`Error al eliminar producto con ID ${req.params.pid}:`, error.message);
-    res.status(404).json({ status: 'error', message: error.message });
+    console.error(`Error al eliminar producto con ID ${req.params.pid}:`, error);
+    res.status(500).json({ status: 'error', message: error.message });
   }
 });
 

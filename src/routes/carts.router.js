@@ -1,12 +1,12 @@
 import express from 'express';
 import CartManagerMongo from '../managers/cartManager.mongo.js';
-import { authenticateUser } from '../middlewares/auth.middleware.js';
-
+import { authenticateUser, isAdmin, isUser } from '../middlewares/auth.middleware.js';
 
 const cartsRouter = express.Router();
 const cartManager = new CartManagerMongo();
 
-cartsRouter.post('/', async (req, res) => {
+// Crear carrito
+cartsRouter.post('/', authenticateUser, async (req, res) => {
   try {
     if (!req.session?.cartId) {
       const newCart = await cartManager.createCart();
@@ -28,7 +28,8 @@ cartsRouter.post('/', async (req, res) => {
   }
 });
 
-cartsRouter.get('/:cid', async (req, res) => {
+// Obtener carrito
+cartsRouter.get('/:cid', authenticateUser, async (req, res) => {
   try {
     const cart = await cartManager.getCartById(req.params.cid);
     res.status(200).json({ status: 'success', payload: cart });
@@ -37,7 +38,8 @@ cartsRouter.get('/:cid', async (req, res) => {
   }
 });
 
-cartsRouter.post('/:cid/products/:pid', async (req, res) => {
+// Agregar producto al carrito (solo user)
+cartsRouter.post('/:cid/products/:pid', authenticateUser, isUser, async (req, res) => {
   try {
     const { cid, pid } = req.params;
     const quantity = req.body.quantity || 1;
@@ -52,7 +54,8 @@ cartsRouter.post('/:cid/products/:pid', async (req, res) => {
   }
 });
 
-cartsRouter.delete('/:cid/products/:pid', async (req, res) => {
+// Eliminar producto del carrito (solo user)
+cartsRouter.delete('/:cid/products/:pid', authenticateUser, isUser, async (req, res) => {
   try {
     const { cid, pid } = req.params;
     const updatedCart = await cartManager.removeProductFromCart(cid, pid);
@@ -66,7 +69,8 @@ cartsRouter.delete('/:cid/products/:pid', async (req, res) => {
   }
 });
 
-cartsRouter.put('/:cid', async (req, res) => {
+// Actualizar carrito
+cartsRouter.put('/:cid', authenticateUser, async (req, res) => {
   try {
     const { cid } = req.params;
     const { products } = req.body;
@@ -81,7 +85,8 @@ cartsRouter.put('/:cid', async (req, res) => {
   }
 });
 
-cartsRouter.delete('/:cid', async (req, res) => {
+// Eliminar todos los productos del carrito
+cartsRouter.delete('/:cid', authenticateUser, async (req, res) => {
   try {
     const { cid } = req.params;
     const updatedCart = await cartManager.clearCart(cid);
@@ -94,15 +99,12 @@ cartsRouter.delete('/:cid', async (req, res) => {
     res.status(400).json({ status: 'error', message: error.message });
   }
 });
+
+// Realizar compra (solo user)
 cartsRouter.post('/:cid/purchase', authenticateUser, async (req, res) => {
   try {
     const { cid } = req.params;
-
-    // Aquí puedes usar req.user si necesitas saber qué usuario hizo la compra
-    // const userId = req.user.id;
-
     const result = await cartManager.purchaseCart(cid);
-
     res.status(200).json({
       status: 'success',
       message: 'Compra realizada exitosamente',
@@ -112,6 +114,5 @@ cartsRouter.post('/:cid/purchase', authenticateUser, async (req, res) => {
     res.status(400).json({ status: 'error', message: error.message });
   }
 });
-
 
 export default cartsRouter;

@@ -176,7 +176,7 @@ app.use((err, req, res, next) => {
 });
 
 // Iniciar servidor
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 9090;
 server.listen(PORT, () => {
   console.log(`Servidor iniciado en http://localhost:${PORT}`);
 });

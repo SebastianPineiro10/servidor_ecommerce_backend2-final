@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'; // Usamos import en lugar de require
+import jwt from 'jsonwebtoken';
 const secretKey = process.env.JWT_SECRET_KEY; // Usar variable de entorno para mayor seguridad
 
 // Función para generar un token JWT

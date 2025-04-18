@@ -12,18 +12,15 @@ export const register = async (req, res) => {
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     }
 
-    // Verificar si el usuario ya existe
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: 'El correo electrónico ya está registrado' });
     }
 
-    // Encriptar la contraseña
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     console.log('Contraseña encriptada:', hashedPassword);
 
-    // Crear usuario en la base de datos
     const newUser = new User({
       first_name,
       last_name,
@@ -49,7 +46,6 @@ export const login = async (req, res) => {
   try {
     console.log('Datos recibidos:', req.body);
 
-    // Buscar usuario en la base de datos
     const user = await User.findOne({ email });
     if (!user) {
       console.log('Usuario no encontrado');
@@ -60,7 +56,6 @@ export const login = async (req, res) => {
     console.log('Contraseña ingresada:', password);
     console.log('Hash almacenado en la base de datos:', user.password);
 
-    // Comparar la contraseña ingresada con el hash almacenado
     const isPasswordValid = await bcrypt.compare(password, user.password);
     console.log('¿Contraseña válida?:', isPasswordValid);
 
@@ -69,18 +64,38 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 
-    // Generar token JWT
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     console.log('Token generado:', token);
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production', // o true si estás usando HTTPS en local
       maxAge: 3600000,
+      sameSite: 'none', // si estás usando frontend en otro origen
     });
 
     const userDTO = new UserDTO(user);
-    res.status(200).json({ message: 'Inicio de sesión exitoso', user: userDTO });
+
+    // Redirección basada en el rol del usuario
+    if (user.role === 'admin') {
+      return res.status(200).json({
+        message: 'Inicio de sesión exitoso',
+        user: userDTO,
+        redirect: '/realtimeproducts', // Redirige a la página del admin
+      });
+    } else if (user.role === 'user') {
+      return res.status(200).json({
+        message: 'Inicio de sesión exitoso',
+        user: userDTO,
+        redirect: '/products', // Redirige a la página de usuario
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Inicio de sesión exitoso',
+        user: userDTO,
+        redirect: '/', // Redirige a la página principal por defecto si el rol es desconocido
+      });
+    }
 
   } catch (error) {
     console.error('Error en el login:', error.message);
@@ -96,16 +111,12 @@ export const current = async (req, res) => {
       return res.status(401).json({ error: 'No autorizado. Token no proporcionado.' });
     }
 
-    // Decodificar el token JWT
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Buscar al usuario por el ID decodificado
     const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
 
-    // Filtrar datos sensibles usando el DTO
     const userDTO = new UserDTO(user);
     res.status(200).json({ status: 'success', payload: userDTO });
 
