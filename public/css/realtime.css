@@ -1,0 +1,557 @@
+body {
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background: linear-gradient(135deg, #eaeaea, #f0f0f5);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    color: #333;
+    text-align: center;
+    font-size: 16px; /* Tamaño base de fuente para todo el documento */
+    padding-top: 60px;
+}
+
+h1 {
+    color: #2c3e50;
+    margin: 32px 0;
+    font-size: 2.5rem; /* Reducido ligeramente para coherencia */
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    width: 100%;
+    display: inline-block;
+}
+
+h2 {
+    color: #2c3e50;
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 20px 0;
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 15px 0;
+}
+
+
+
+.form-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 25px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-field {
+    padding: 14px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem; /* Coherente con el tamaño base */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-field:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
+}
+
+.submit-btn {
+    padding: 14px;
+    background-color: #f39c12;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.submit-btn:hover {
+    background-color: #e67e22;
+    transform: translateY(-2px);
+}
+
+.product-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.product-card {
+    background-color: #f39c12;
+    width: 100%;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.product-card-2 {
+    background-color: whitesmoke;
+    width: 100%; 
+    max-width: 350px;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.producto {
+    background-color: whitesmoke;
+    width: 100%; 
+    max-width: 350px;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 30px;
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.product-btn {
+    padding: 10px 15px;
+    font-size: 1rem;
+    border-radius: 5px;
+    margin-top: 10px;
+    color: #fff;
+    background-color: #3498db;
+    border: none;
+}
+
+.product-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.product-thumbnail, .product-image {
+    width: 100%;
+    height: 200px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.no-image, .no-image-detail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    height: 200px;
+    color: #888;
+}
+
+.card-body {
+    padding: 18px;
+    background-color: whitesmoke;
+    border-radius: 15px;
+    margin: 10px;
+}
+
+.card-title {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: #2c3e50;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+
+.card-text {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #333;
+    font-style: italic;
+}
+
+.btn-primary, .btn-success, .btn-info, .btn-warning {
+    padding: 10px 15px;
+    font-size: 1rem;
+    border-radius: 5px;
+    margin-top: 15px;
+    color: #fff;
+    background-color: #3498db;
+    border: none;
+}
+
+.btn-primary:hover, .btn-success:hover {
+    background-color: #2980b9;
+}
+
+.pagination {
+    margin-top: 20px;
+}
+
+.pagination .page-item .page-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.pagination .page-item .page-link:focus {
+    outline: none;
+}
+
+.product-detail-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.table-responsive {
+    background: #f9f9f9; /* Fondo ligeramente gris para suavizar el contraste */
+    border-radius: 12px; /* Bordes más redondeados para un estilo más suave */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra más difusa para un efecto más moderno */
+    overflow-x: auto;
+    padding: 8px;
+    margin-top: 30px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.3s ease; /* Transición para efectos suaves */
+}
+
+.table-responsive:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Sombra más sutil al pasar el mouse */
+}
+
+.table-responsive table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-responsive th, .table-responsive td {
+    padding: 15px 20px; /* Espaciado interior más amplio para mejor lectura */
+    text-align: left;
+    font-size: 1rem;
+    color: #444; /* Color de texto gris oscuro para mayor legibilidad */
+    vertical-align: middle; /* Alineación vertical centrada para una mejor estética */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transición suave */
+}
+
+.table-responsive th {
+    background-color: #3498db; /* Color moderno y llamativo para el encabezado */
+    color: #fff; /* Texto blanco para el encabezado */
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-radius: 8px 8px 0 0; /* Bordes redondeados solo en la parte superior */
+}
+
+.table-responsive tr:nth-child(even) {
+    background-color: #fafafa; /* Fila par con un fondo muy suave */
+}
+
+.table-responsive tr:hover {
+    background-color: #f1f1f1; /* Fondo ligeramente más oscuro cuando se pasa el mouse sobre la fila */
+}
+
+.table-responsive td {
+    border-bottom: 1px solid #e0e0e0; /* Línea de separación sutil entre las celdas */
+}
+
+.table-responsive .table-btn {
+    padding: 8px 18px;
+    background-color: #f39c12;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Efectos suaves en hover */
+    letter-spacing: 1px;
+}
+
+.table-responsive .table-btn:hover {
+    background-color: #e67e22; /* Color más oscuro en hover */
+    transform: translateY(-2px); /* Leve elevación al hacer hover */
+}
+
+.table-responsive .table-btn:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3); /* Sombra suave al hacer clic */
+}
+
+.table-responsive .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.table-responsive .pagination .page-link {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #3498db;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.table-responsive .pagination .page-link:hover {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.table-responsive .pagination .page-item.active .page-link {
+    background-color: #3498db;
+    color: #fff;
+    border-color: #3498db;
+}
+
+.quantity-control .btn {
+    min-width: 35px;
+}
+
+.quantity-control .form-control {
+    text-align: center;
+}
+
+.remove-from-cart .fas {
+    font-size: 1rem;
+}
+
+.clear-cart, .checkout {
+    margin-top: 10px;
+}
+
+.delete-btn {
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 12px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.delete-btn:hover {
+    background-color: #555;
+    transform: translateY(-2px);
+}
+
+/* Eliminar subrayado y bordes en botones */
+.submit-btn, .btn-primary, .btn-success, .delete-btn {
+    text-decoration: none;
+    outline: none;
+}
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style-type: none;
+    padding: 0;
+    gap: 10px;
+}
+
+.pagination .page-item {
+    display: inline;
+}
+
+.pagination .page-link {
+    color: #007bff;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.pagination .page-link:hover {
+    background-color: #3498db;
+    color: white;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.pagination .page-item .page-link:focus {
+    outline: none;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #ccc;
+    pointer-events: none;
+}
+
+/* Estilo para el Navbar */
+.navbar {
+    background-color: #333; /* Gris oscuro para el fondo del navbar */
+    padding: 10px 20px;
+    width: 100%; /* Asegura que el navbar abarque todo el ancho */
+    height: auto;
+    box-sizing: border-box; /* Para que no haya problemas con el padding */
+    position: fixed; /* Fija el navbar en la parte superior */
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Asegura que el navbar quede por encima de otros elementos */
+}
+
+
+ .container-fluid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.navbar-brand {
+    color: #B0B0B0; /* Gris claro para el texto */
+    font-size: 1.5rem;
+    text-decoration: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Separación entre el ícono y el texto */
+}
+
+.navbar-toggler {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+.navbar-toggler-icon {
+    background-color: #B0B0B0; /* Gris claro para el ícono de hamburguesa */
+    display: block;
+    width: 25px;
+    height: 3px;
+    position: relative;
+    top: 8px;
+}
+
+/* Estilo para los enlaces de Navbar */
+.navbar-links {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-links a {
+    color: #B0B0B0; /* Gris claro para los enlaces */
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500; /* Agrega peso al texto */
+}
+
+.navbar-links a:hover {
+    color: #FFC107; /* Amarillo al pasar el cursor */
+}
+
+/* Estilo para el ícono de carrito */
+.cart-icon {
+    color: #B0B0B0; /* Gris claro */
+    font-size: 1.8rem; /* Aumenta el tamaño del ícono */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Espaciado entre ícono y texto */
+}
+
+.cart-icon:hover {
+    color: #FFC107; /* Amarillo al pasar el cursor */
+}
+
+/* Ajustes para el ícono "+" en el navbar */
+.navbar .plus-icon {
+    color: #B0B0B0;
+    font-size: 1.5rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.navbar .plus-icon:hover {
+    color: #FFC107; /* Amarillo al pasar el cursor */
+}
+
+/* Responsive: mostrar el botón del menú cuando la pantalla sea pequeña */
+@media (max-width: 768px) {
+    .navbar-toggler {
+        display: block;
+    }
+
+    .navbar-links {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .navbar.active .navbar-links {
+        display: flex;
+    }
+
+    /* Ajustes para el navbar en pantallas pequeñas */
+    .navbar {
+        padding: 10px 15px;
+    }
+}

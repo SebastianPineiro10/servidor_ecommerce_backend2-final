@@ -1,0 +1,74 @@
+<div class="container mt-4">
+  <h1>Lista de Productos</h1>
+  <div class="product-list">
+    {{#each products}}
+    <div class="producto">
+      <!-- Verificamos si hay thumbnails y si existe al menos uno -->
+      {{#if thumbnails.length}}
+      <img src="{{thumbnails.[0]}}" class="product-thumbnail" alt="{{title}}">
+      {{/if}}
+      <!-- Card Body -->
+      <div class="product-info">
+        <h5 class="product-title">{{title}}</h5>
+        <p class="product-description">{{description}}</p>
+        <p class="product-category"><strong>Categoría:</strong> {{category}}</p>
+        <p class="product-price"><strong>Precio:</strong> ${{price}}</p>
+        <p class="product-stock"><strong>Stock:</strong> {{stock}}</p>
+        <!-- Botón para agregar al carrito -->
+        {{#if ../cartId}}
+        <div class="mt-3">
+          <div class="input-group mb-3">
+            <input type="number" id="quantity-{{_id}}" class="form-control" value="1" min="1" max="{{stock}}">
+            <button class="add-to-cart-btn" data-product-id="{{_id}}" data-cart-id="{{../cartId}}">
+              Agregar al carrito
+            </button>
+          </div>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+    {{/each}}
+  </div>
+</div>
+
+{{#if cartId}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+  addToCartButtons.forEach(button => {
+    button.addEventListener('click', async function() {
+      const productId = this.dataset.productId;
+      const cartId = this.dataset.cartId;
+      const quantityInput = document.getElementById(`quantity-${productId}`);
+      const quantity = parseInt(quantityInput.value, 10);
+
+      if (quantity < 1) {
+        alert('La cantidad debe ser mayor a 0');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ quantity })
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+          alert('Producto agregado al carrito');
+        } else {
+          alert(`Error: ${result.message}`);
+        }
+      } catch (error) {
+        alert('Error al agregar el producto al carrito');
+        console.error(error);
+      }
+    });
+  });
+});
+</script>
+{{/if}}
+

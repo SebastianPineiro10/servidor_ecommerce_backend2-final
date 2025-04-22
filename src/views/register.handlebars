@@ -1,0 +1,65 @@
+<h1>Registro de Usuario</h1>
+<form id="registerForm">
+  <label for="name">Nombre:</label>
+  <input type="text" id="name" name="name" required>
+  <br>
+
+  <label for="last_name">Apellido:</label>
+  <input type="text" id="last_name" name="last_name" required>
+  <br>
+
+  <label for="email">Correo:</label>
+  <input type="email" id="email" name="email" required>
+  <br>
+
+  <label for="password">Contraseña:</label>
+  <input type="password" id="password" name="password" required>
+  <br>
+
+  <label for="age">Edad:</label>
+  <input type="number" id="age" name="age" required>
+  <br>
+
+  <label for="role">Rol:</label>
+  <select id="role" name="role" required>
+    <option value="user">Usuario</option>
+    <option value="admin">Administrador</option>
+  </select>
+  <br>
+
+  <button type="submit">Registrar</button>
+</form>
+
+<script>
+  const registerForm = document.getElementById('registerForm');
+  registerForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(registerForm);
+    const payload = Object.fromEntries(formData);
+    
+    console.log('Enviando datos de registro:', payload); // Verifica los datos antes de enviarlos
+
+    try {
+      const response = await fetch('/api/session/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      console.log('Respuesta del backend:', result); // Verifica la respuesta
+
+      if (response.ok && result.token) {
+        localStorage.setItem('token', result.token);  // Guardar el token
+        alert('Usuario registrado correctamente');
+        window.location.href = '/dashboard'; // Redirigir si es correcto
+      } else {
+        alert(result.error || 'Error al registrar usuario');
+      }
+    } catch (error) {
+      console.error('Error en el registro:', error);
+      alert('Error al intentar registrar usuario.');
+    }
+  });
+</script>

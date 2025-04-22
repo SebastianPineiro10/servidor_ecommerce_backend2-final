@@ -1,0 +1,46 @@
+<h1>Iniciar Sesión</h1>
+<form id="loginForm">
+  <input type="email" name="email" placeholder="Email" required>
+  <input type="password" name="password" placeholder="Contraseña" required>
+  <button type="submit">Iniciar Sesión</button>
+</form>
+
+<script>
+  document.getElementById('loginForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const payload = Object.fromEntries(formData);
+    
+    console.log('Enviando datos de login:', payload);
+
+    try {
+      const response = await fetch('/api/session/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      console.log('Respuesta del backend:', result);
+
+      if (response.ok && result.token) {
+        localStorage.setItem('token', result.token);
+        // Comprueba si el servidor proporcionó una URL de redirección
+        if (result.redirect) {
+          window.location.href = result.redirect; // Usa la URL del servidor
+        } else {
+          window.location.href = '/dashboard'; // Redirección por defecto
+        }
+        alert('Inicio de sesión exitoso. Redirigiendo...'); // Mensaje al usuario
+      } else {
+        // Muestra un mensaje de error más descriptivo
+        const errorMessage = result.error || 'Error al iniciar sesión. Por favor, verifique sus credenciales.';
+        alert(errorMessage);
+      }
+    } catch (error) {
+      console.error('Error en el login:', error);
+      alert('Error al intentar iniciar sesión. Error de red o del servidor.'); // Indica problema de red/servidor
+    }
+  });
+</script>
