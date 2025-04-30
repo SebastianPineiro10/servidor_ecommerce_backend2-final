@@ -1,103 +1,96 @@
+{{#if (eq user.role 'admin')}}
 <div>
-    <h1 class="title">Real Time Products</h1>
+  <h1 class="title">Real Time Products</h1>
 
-    <!-- Formulario para agregar nuevo producto -->
-    {{#if (eq user.role 'admin')}}
-        <h2>Agregar nuevo producto</h2>
-        <form id="formNewProduct" class="form-container">
-            <div class="input-group">
-                <input type="text" name="title" placeholder="Ingrese el título" required class="input-field">
-            </div>
-            <div class="input-group">
-                <input type="text" name="description" placeholder="Ingrese la descripción" required class="input-field">
-            </div>
-            <div class="input-group">
-                <input type="text" name="code" placeholder="Ingrese el código" required class="input-field">
-            </div>
-            <div class="input-group">
-                <input type="number" name="price" placeholder="Ingrese el precio" required class="input-field">
-            </div>
-            <div class="input-group">
-                <input type="number" name="stock" placeholder="Ingrese el stock" required class="input-field">
-            </div>
-            <div class="input-group">
-                <input type="text" name="category" placeholder="Ingrese la categoría" required class="input-field">
-            </div>
-            <button type="submit" class="submit-btn">Enviar</button>
-        </form>
-    {{/if}}
-
-    <!-- Lista de productos -->
-    <h2>Lista de Productos</h2>
-    <div class="product-container" id="productsList">
-        {{#each products}}
-            <div class="product-card">
-                <h3>{{this.title}}</h3>
-                <p><strong>Precio:</strong> ${{this.price}}</p>
-                <p><strong>Categoría:</strong> {{this.category}}</p>
-                <p><strong>Stock:</strong> {{this.stock}}</p>
-                
-                {{#if (eq ../user.role 'admin')}}
-                    <button class="delete-btn" data-id="{{this.code}}">Eliminar</button>
-                {{else}}
-                    <button class="add-cart-btn" data-id="{{this._id}}">Agregar al carrito</button>
-                {{/if}}
-            </div>
-        {{/each}}
+  <h2>Agregar nuevo producto</h2>
+  <form id="formNewProduct" class="form-container">
+    <div class="input-group">
+      <input type="text" name="title" placeholder="Ingrese el título" required class="input-field">
     </div>
+    <div class="input-group">
+      <input type="text" name="description" placeholder="Ingrese la descripción" required class="input-field">
+    </div>
+    <div class="input-group">
+      <input type="text" name="code" placeholder="Ingrese el código" required class="input-field">
+    </div>
+    <div class="input-group">
+      <input type="number" name="price" placeholder="Ingrese el precio" required class="input-field">
+    </div>
+    <div class="input-group">
+      <input type="number" name="stock" placeholder="Ingrese el stock" required class="input-field">
+    </div>
+    <div class="input-group">
+      <input type="text" name="category" placeholder="Ingrese la categoría" required class="input-field">
+    </div>
+    <button type="submit" class="submit-btn">Enviar</button>
+  </form>
+
+  <h2>Lista de Productos</h2>
+  <div class="product-container" id="productsList">
+    {{#each products}}
+      <div class="product-card" data-code="{{this.code}}">
+        <h3>{{this.title}}</h3>
+        <p><strong>Precio:</strong> ${{this.price}}</p>
+        <p><strong>Categoría:</strong> {{this.category}}</p>
+        <p><strong>Stock:</strong> {{this.stock}}</p>
+        <button class="delete-btn" data-id="{{this.code}}">Eliminar</button>
+      </div>
+    {{/each}}
+  </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/index.js"></script>
-
 <script>
-    document.getElementById('formNewProduct')?.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const productData = {
-            title: event.target.title.value,
-            description: event.target.description.value,
-            code: event.target.code.value,
-            price: parseFloat(event.target.price.value),
-            stock: parseInt(event.target.stock.value),
-            category: event.target.category.value,
-        };
-        socket.emit('newProduct', productData);
-    });
+  const socket = io();
 
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const productCode = button.getAttribute('data-id');
-            socket.emit('deleteProduct', productCode);
-        });
-    });
+  document.getElementById('formNewProduct')?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const productData = {
+      title: event.target.title.value,
+      description: event.target.description.value,
+      code: event.target.code.value,
+      price: parseFloat(event.target.price.value),
+      stock: parseInt(event.target.stock.value),
+      category: event.target.category.value,
+    };
+    socket.emit('newProduct', productData);
+    event.target.reset();
+  });
 
-    document.querySelectorAll('.add-cart-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const productId = button.getAttribute('data-id');
-            fetch(`/api/carts/{{user.cartId}}/products/${productId}`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    alert('Producto agregado al carrito');
-                } else {
-                    alert('Error al agregar producto');
-                }
-            });
-        });
-    });
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('delete-btn')) {
+      const productCode = e.target.getAttribute('data-id');
+      socket.emit('deleteProduct', productCode);
+    }
+  });
 
-    socket.on('productsUpdated', (products) => {
-        const productList = document.getElementById('productsList');
-        productList.innerHTML = products.map(product => `
-            <div class="product-card">
-                <h3>${product.title}</h3>
-                <p><strong>Precio:</strong> $${product.price}</p>
-                <p><strong>Categoría:</strong> ${product.category}</p>
-                <p><strong>Stock:</strong> ${product.stock}</p>
+  socket.on('productAdded', (product) => {
+    const productList = document.getElementById('productsList');
+    const newCard = document.createElement('div');
+    newCard.classList.add('product-card');
+    newCard.setAttribute('data-code', product.code);
+    newCard.innerHTML = `
+      <h3>${product.title}</h3>
+      <p><strong>Precio:</strong> $${product.price}</p>
+      <p><strong>Categoría:</strong> ${product.category}</p>
+      <p><strong>Stock:</strong> ${product.stock}</p>
+      <button class="delete-btn" data-id="${product.code}">Eliminar</button>
+    `;
+    productList.appendChild(newCard);
+  });
 
-                ${user.role === 'admin' ? `<button class="delete-btn" data-id="${product.code}">Eliminar</button>` : ''}
-                ${user.role === 'user' ? `<button class="add-cart-btn" data-id="${product._id}">Agregar al carrito</button>` : ''}
-            </div>
-        `).join('');
-    });
+  socket.on('productDeleted', (data) => {
+    const productCard = document.querySelector(`.product-card[data-code="${data.code}"]`);
+    if (productCard) {
+      productCard.remove();
+    }
+  });
+
+  socket.on('productError', (err) => {
+    alert('Error del servidor: ' + err.message);
+  });
 </script>
+
+{{else}}
+  <h2 style="text-align: center; margin-top: 80px;">⚠️ Esta vista está restringida. Solo administradores pueden acceder.</h2>
+{{/if}}

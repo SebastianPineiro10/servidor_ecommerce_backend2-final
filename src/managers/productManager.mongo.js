@@ -1,8 +1,30 @@
 import Product from '../models/product.model.js';
 
 export default class ProductManagerMongo {
-  async getProducts() {
-    return await Product.paginate({}, { lean: true });
+  async getProducts(options = {}) {
+    const { limit = 10, page = 1, sort, query } = options;
+
+    const filters = {};
+    if (query) filters.category = query;
+
+    const sortOptions = sort === 'asc'
+      ? { price: 1 }
+      : sort === 'desc'
+      ? { price: -1 }
+      : {};
+
+    return await Product.paginate(filters, {
+      limit: parseInt(limit),
+      page: parseInt(page),
+      sort: sortOptions,
+      lean: true
+    });
+  }
+
+  async getProductById(id) {
+    const product = await Product.findById(id).lean();
+    if (!product) throw new Error('Producto no encontrado');
+    return product;
   }
 
   async addProduct(productData) {

@@ -7,22 +7,22 @@
       <div class="filter-item">
         <label for="limit">Productos por página</label>
         <select name="limit" id="limit" class="filter-select">
-          <option value="10" {{#if (eq products.limit 10)}}selected{{/if}}>10</option>
-          <option value="20" {{#if (eq products.limit 20)}}selected{{/if}}>20</option>
-          <option value="50" {{#if (eq products.limit 50)}}selected{{/if}}>50</option>
+          <option value="10" {{#if (eq limit 10)}}selected{{/if}}>10</option>
+          <option value="20" {{#if (eq limit 20)}}selected{{/if}}>20</option>
+          <option value="50" {{#if (eq limit 50)}}selected{{/if}}>50</option>
         </select>
       </div>
       <div class="filter-item">
         <label for="sort">Ordenar por precio</label>
         <select name="sort" id="sort" class="filter-select">
           <option value="">Sin ordenar</option>
-          <option value="asc" {{#if (eq products.sort "asc")}}selected{{/if}}>Menor a mayor</option>
-          <option value="desc" {{#if (eq products.sort "desc")}}selected{{/if}}>Mayor a menor</option>
+          <option value="asc" {{#if (eq sort "asc")}}selected{{/if}}>Menor a mayor</option>
+          <option value="desc" {{#if (eq sort "desc")}}selected{{/if}}>Mayor a menor</option>
         </select>
       </div>
       <div class="filter-item">
         <label for="query">Filtrar por categoría</label>
-        <input type="text" class="filter-input" id="query" name="query" value="{{products.query}}">
+        <input type="text" class="filter-input" id="query" name="query" value="{{query}}">
       </div>
       <div class="filter-item">
         <button type="submit" class="filter-btn">Aplicar filtros</button>
@@ -32,10 +32,10 @@
   
   <!-- Lista de productos -->
   <div class="product-list">
-    {{#each products.payload}}
+    {{#each products}}
     <div class="product-card-2">
       {{#if thumbnails.length}}
-      <img src="{{thumbnails.[0]}}" class="product-thumbnail" alt="{{title}}">
+        <img src="{{thumbnails.[0]}}" class="product-thumbnail" alt="{{title}}">
       {{/if}}
       <div class="product-info">
         <h5 class="product-title">{{title}}</h5>
@@ -61,9 +61,9 @@
   <div class="pagination">
     <nav>
       <ul class="pagination-list">
-        {{#if products.hasPrevPage}}
+        {{#if hasPrevPage}}
         <li class="page-item">
-          <a class="page-link" href="{{products.prevLink}}" aria-label="Anterior">
+          <a class="page-link" href="?page={{prevPage}}&limit={{limit}}&sort={{sort}}&query={{query}}" aria-label="Anterior">
             <span>&laquo;</span>
           </a>
         </li>
@@ -72,12 +72,14 @@
           <span class="page-link">&laquo;</span>
         </li>
         {{/if}}
+
         <li class="page-item active">
-          <span class="page-link">Página {{products.page}} de {{products.totalPages}}</span>
+          <span class="page-link">Página {{page}} de {{totalPages}}</span>
         </li>
-        {{#if products.hasNextPage}}
+
+        {{#if hasNextPage}}
         <li class="page-item">
-          <a class="page-link" href="{{products.nextLink}}" aria-label="Siguiente">
+          <a class="page-link" href="?page={{nextPage}}&limit={{limit}}&sort={{sort}}&query={{query}}" aria-label="Siguiente">
             <span>&raquo;</span>
           </a>
         </li>
@@ -93,10 +95,10 @@
 
 {{#if cartId}}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const addToCartButtons = document.querySelectorAll('.add-to-cart');
   addToCartButtons.forEach(button => {
-    button.addEventListener('click', async function() {
+    button.addEventListener('click', async function () {
       const productId = this.dataset.productId;
       const cartId = this.dataset.cartId;
       const originalText = this.innerText;
