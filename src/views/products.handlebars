@@ -47,6 +47,7 @@
           <button class="product-btn" onclick="window.location.href='/products/{{_id}}'">Ver detalles</button>
 
           {{#if ../cartId}}
+          <input type="number" class="quantity-input" id="quantity-{{_id}}" placeholder="Cantidad" min="1" max="{{stock}}" value="1">
           <button class="product-btn add-to-cart" data-product-id="{{_id}}" data-cart-id="{{../cartId}}">
             Agregar al carrito
           </button>
@@ -56,7 +57,7 @@
     </div>
     {{/each}}
   </div>
-  
+
   <!-- Paginación -->
   <div class="pagination">
     <nav>
@@ -101,16 +102,22 @@ document.addEventListener('DOMContentLoaded', function () {
     button.addEventListener('click', async function () {
       const productId = this.dataset.productId;
       const cartId = this.dataset.cartId;
+      const quantityInput = document.getElementById(`quantity-${productId}`);
+      const quantity = parseInt(quantityInput.value);
+
+      if (!quantity || quantity < 1) {
+        return alert('Ingresa una cantidad válida');
+      }
+
       const originalText = this.innerText;
       this.innerText = 'Agregando...';
       this.disabled = true;
+
       try {
         const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ quantity: 1 })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantity })
         });
         const result = await response.json();
         if (response.ok) {
@@ -132,6 +139,35 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
+});
+</script>
+{{/if}}
+
+
+{{#if cartId}}
+<div style="text-align: center; margin-top: 40px;">
+  <button id="purchase-btn" class="product-btn" style="font-size: 1.1rem; padding: 10px 20px;">Finalizar compra</button>
+</div>
+
+<script>
+document.getElementById('purchase-btn').addEventListener('click', async () => {
+  const cartId = "{{cartId}}";
+  try {
+    const response = await fetch(`/api/carts/${cartId}/purchase`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const result = await response.json();
+    if (response.ok) {
+      alert('Compra completada con éxito. Ticket enviado por correo.');
+      window.location.reload();
+    } else {
+      alert('Error al finalizar la compra: ' + result.message);
+    }
+  } catch (error) {
+    console.error('Error en la compra:', error);
+    alert('Error en el proceso de compra');
+  }
 });
 </script>
 {{/if}}

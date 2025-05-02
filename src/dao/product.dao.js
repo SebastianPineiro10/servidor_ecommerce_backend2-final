@@ -1,26 +1,25 @@
 import ProductModel from '../models/product.model.js';
 
 class ProductDAO {
-    async getAllProducts() {
+    async getAll() {
         return await ProductModel.find();
     }
 
-    async getProductById(id) {
+    async getById(id) {
         return await ProductModel.findById(id);
     }
 
-    async addProduct(productData) {
-        return await ProductModel.create(productData);
+    async create(data) {
+        return await ProductModel.create(data);
     }
 
-    async updateProduct(id, updatedData) {
-        return await ProductModel.findByIdAndUpdate(id, updatedData, { new: true });
+    async update(id, data) {
+        return await ProductModel.findByIdAndUpdate(id, data, { new: true });
     }
 
-    async deleteProduct(id) {
+    async delete(id) {
         return await ProductModel.findByIdAndDelete(id);
     }
 }
 
 export default new ProductDAO();
-

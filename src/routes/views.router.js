@@ -8,7 +8,7 @@ const viewsRouter = express.Router();
 const productManager = new ProductManagerMongo();
 const cartManager = new CartManagerMongo();
 
-// Vista principal - Home
+// Vista principal
 viewsRouter.get('/', async (req, res) => {
   try {
     const result = await productManager.getProducts();
@@ -22,7 +22,7 @@ viewsRouter.get('/', async (req, res) => {
   }
 });
 
-// Vista de productos con paginación
+// Vista de productos
 viewsRouter.get('/products', async (req, res) => {
   try {
     const options = {
@@ -33,9 +33,22 @@ viewsRouter.get('/products', async (req, res) => {
     };
 
     const result = await productManager.getProducts(options);
+    const sessionUser = req.session.user;
+    let cartId = null;
+
+    if (sessionUser?.email) {
+      const dbUser = await User.findOne({ email: sessionUser.email }).lean();
+      cartId = dbUser?.cartId?.toString() || dbUser?.cart?.toString() || null;
+      req.session.user.cartId = cartId;
+    }
+
+    console.log('🧠 Sesión del usuario en /products:', req.session.user);
+    console.log('🧺 cartId enviado a la vista:', cartId);
 
     res.render('products', {
       user: req.session.user,
+      cartId,
+      role: req.session.user.role,
       products: result.docs,
       title: 'Catálogo de Productos',
       prevPage: result.hasPrevPage ? result.prevPage : null,
@@ -46,37 +59,38 @@ viewsRouter.get('/products', async (req, res) => {
   }
 });
 
-// Vista de detalle de producto
+// Vista de detalle
 viewsRouter.get('/products/:pid', async (req, res) => {
   try {
     const product = await productManager.getProductById(req.params.pid);
+    const user = req.session.user;
+    const cartId = user?.cartId || user?.cart || null;
+
     res.render('product-detail', {
-      user: req.session.user,
+      user,
       product,
-      title: product.title
+      title: product.title,
+      cartId
     });
   } catch (error) {
     res.status(404).send({ message: error.message });
   }
 });
 
-// Vista de inicio de sesión
-viewsRouter.get('/login', (req, res) => {
-  res.render('login', { title: 'Iniciar sesión' });
-});
-
-// Vista de registro
-viewsRouter.get('/register', (req, res) => {
-  res.render('register', { title: 'Registrarse' });
-});
-
-// Vista de carrito
+// Vista del carrito (con total calculado)
 viewsRouter.get('/carts/:cid', async (req, res) => {
   try {
     const cart = await cartManager.getCartById(req.params.cid);
+
+    let total = 0;
+    cart.products.forEach(p => {
+      total += p.product.price * p.quantity;
+    });
+
     res.render('cart', {
       user: req.session.user,
       cart,
+      total,
       title: 'Tu Carrito',
       isEmpty: cart.products.length === 0
     });
@@ -85,7 +99,7 @@ viewsRouter.get('/carts/:cid', async (req, res) => {
   }
 });
 
-// Vista de productos en tiempo real con WebSockets
+// Vista realtime (admin)
 viewsRouter.get('/realtimeproducts', async (req, res) => {
   try {
     const result = await productManager.getProducts();
@@ -99,35 +113,27 @@ viewsRouter.get('/realtimeproducts', async (req, res) => {
   }
 });
 
-// Vista de detalles del usuario con JWT
+// Perfil del usuario
 viewsRouter.get('/user-details', async (req, res) => {
   try {
     const token = req.cookies?.token;
-    if (!token) {
-      return res.status(401).send('No autorizado. Token no proporcionado.');
-    }
+    if (!token) return res.status(401).send('No autorizado');
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id).lean();
 
-    if (!user) {
-      return res.status(404).send('Usuario no encontrado.');
-    }
+    if (!user) return res.status(404).send('Usuario no encontrado');
 
-    res.render('userDetails', {
-      title: 'Detalles del Usuario',
-      user: {
-        first_name: user.first_name,
-        last_name: user.last_name,
-        email: user.email,
-        age: user.age,
-        role: user.role
-      }
+    res.render('user-details', {
+      title: 'Tu Perfil',
+      user
     });
   } catch (error) {
-    console.error('Error en la ruta /user-details:', error.message);
-    res.status(401).send('Token inválido o expirado.');
+    res.status(500).send({ message: error.message });
   }
 });
+
+viewsRouter.get('/login', (req, res) => res.render('login', { title: 'Iniciar sesión' }));
+viewsRouter.get('/register', (req, res) => res.render('register', { title: 'Registrarse' }));
 
 export default viewsRouter;

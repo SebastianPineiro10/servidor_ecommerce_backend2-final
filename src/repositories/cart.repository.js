@@ -1,24 +1,30 @@
 import CartDAO from '../dao/cart.dao.js';
-import CartDTO from '../dto/cart.dto.js';
 
 class CartRepository {
-    async getByUserId(userId) {
-        let cart = await CartDAO.getByUserId(userId);
-        if (!cart) {
-            cart = await CartDAO.create({ userId, products: [] });
-        }
-        return new CartDTO(cart);
+  async getByUserId(userId) {
+    let cart = await CartDAO.getByUserId(userId);
+    if (!cart) {
+      cart = await CartDAO.create({ userId, products: [] });
     }
+    return cart;
+  }
 
-    async addProduct(cartId, productId, quantity) {
-        const cart = await CartDAO.addProduct(cartId, productId, quantity);
-        return new CartDTO(cart);
-    }
+  async getCartById(cartId) {
+    return await CartDAO.getCartById(cartId);
+  }
 
-    async removeProduct(cartId, productId) {
-        const cart = await CartDAO.removeProduct(cartId, productId);
-        return new CartDTO(cart);
-    }
+  async addProduct(cartId, productId, quantity) {
+    return await CartDAO.addProduct(cartId, productId, quantity);
+  }
+
+  async removeProduct(cartId, productId) {
+    return await CartDAO.removeProduct(cartId, productId);
+  }
+
+  // ✅ ESTA FUNCIÓN FALTABA
+  async updateCart(cartId, data) {
+    return await CartDAO.updateCart(cartId, data);
+  }
 }
 
 export default new CartRepository();
