@@ -2,14 +2,14 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config(); // Cargar variables de entorno desde .env
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // o tu servicio de correo
-    auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-    },
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER, // 🔑 debe coincidir con EMAIL_USER en .env
+    pass: process.env.EMAIL_PASS  // 🔐 debe coincidir con EMAIL_PASS en .env (app password generada desde Gmail)
+  }
 });
 
 export default transporter;

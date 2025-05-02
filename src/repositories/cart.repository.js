@@ -21,7 +21,6 @@ class CartRepository {
     return await CartDAO.removeProduct(cartId, productId);
   }
 
-  // ✅ ESTA FUNCIÓN FALTABA
   async updateCart(cartId, data) {
     return await CartDAO.updateCart(cartId, data);
   }
